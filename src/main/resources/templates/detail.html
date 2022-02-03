@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 블로그!</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <style>
+
+        .center-image {
+            width: 700px;
+            height: 400px;
+            margin: auto;
+            margin-bottom: 20px;
+        }
+
+        .my-image {
+            width: 700px;
+            height: 400px;
+            position: relative;
+        }
+
+        .my-box {
+            width: 700px;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid black;
+            margin-bottom: 20px;
+        }
+
+    </style>
+    <script>
+        $(document).ready(function (){
+            getOneComment();
+        })
+
+        function getOneComment(){
+            let id = localStorage.getItem('id');
+            $.ajax({
+                type: "GET",
+                url: `/api/comments/${id}`,
+                success: function (response){
+                    let comment = response.comment;
+                    let title = response.title;
+                    let username = response.username;
+                    let createdAt = response.createdAt;
+                    addHTML(comment, title, username, createdAt);
+                    getReply(title);
+                }
+            })
+        }
+
+        function addHTML(comment, title, username, createdAt){
+            let tempHtml = `<div>
+                                <label for="exampleFormControlTextarea1" class="form-label">제목</label>
+                                <h2 id="title" style="width: 100%; border: 1px solid black">${title}</h2>
+                            </div>
+                            <div>
+                                <label for="exampleFormControlTextarea1" class="form-label">작성자</label>
+                                <p id="username" style="width: 100%; border: 1px solid black">${username}</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">내용</label>
+                                <h3 style="width: 100%; border: 1px solid black">${comment}</h3>
+                            </div>
+                            <p>${createdAt}</p>`
+            $('#comment-box').append(tempHtml);
+        }
+
+
+        function writeReply(){
+            if($('#reply').val() == ""){
+                alert("내용을 입력해주세요")
+            }else {
+                let username = $('#my-username').text().trim();
+                let reply = $('#reply').val();
+                let title = $('#title').text().trim();
+                let comment = null;
+                let data = {'username': username, 'reply': reply, 'title': title, 'comment': comment};
+                $.ajax({
+                    type: "POST",
+                    url: "/api/reply/p",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        alert("작성 완료")
+                        window.location.reload();
+                    }
+                })
+            }
+        }
+
+        function getReply(title){
+            $('#reply-box').empty();
+            $.ajax({
+                type: "GET",
+                url: `/api/reply/${title}`,
+                success: function (response){
+                    for(let i = 0; i < response.length; i++){
+                        let replys = response[i];
+                        let title = replys.title;
+                        let id = replys.id;
+                        let username = replys.username;
+                        let reply = replys.reply;
+                        let createdAt = replys.createdAt;
+                        addHTML2(id, title, username, reply, createdAt);
+                    }
+                }
+            })
+        }
+
+        function addHTML2(id, title, username, reply, createdAt){
+            let tempHtml = `<div class="my-box">
+                                <h3 id="reply-username-${id}">${username}</h3>
+                                <h4 id="replybox-${id}">${reply}</h4>
+                                <textarea id="textarea-${id}" rows="3" style="display: none; width: 100%">${reply}</textarea>
+                                <p style="float: right; margin-bottom: 10px">${createdAt}</p>
+                                <p id="title-${id}" style="display: none">${title}</p>
+                                <button id="sub-btn-${id}" type="button" style="margin: auto; position: relative" class="btn btn-primary" onclick="subReplyCheck(${id})">수정하기</button>
+                                <button id="sub-btn2-${id}" type="button" style="margin: auto; position: relative; display: none" class="btn btn-primary" onclick="subReply(${id})">수정완료</button>
+                                <button type="button" style="margin: auto; display: block" class="btn btn-secondary" onclick="deleteReply(${id})">삭제하기</button>
+                            </div>`
+            $('#reply-box').append(tempHtml);
+        }
+
+        function subReplyCheck(id){
+            let username = $(`#reply-username-${id}`).text().trim();
+            if ($('#my-username').text().trim() != username){
+                alert("댓글 작성자만 수정할 수 있습니다.")
+            }else{
+                $(`#replybox-${id}`).hide();
+                $(`#sub-btn-${id}`).hide();
+                $(`#textarea-${id}`).show();
+                $(`#sub-btn2-${id}`).show();
+            }
+        }
+
+        function subReply(id) {
+            if($(`#textarea-${id}`).val() == ""){
+                alert("내용을 입력해주세요!")
+            }else{
+                let username = $(`#reply-username-${id}`).text().trim();
+                let title = $(`#title-${id}`).text().trim();
+                let reply = $(`#textarea-${id}`).val();
+                let comment = null;
+                console.log(username, title, reply, comment);
+                let data = {'username': username, 'title': title, 'reply': reply, 'comment': comment};
+                $.ajax({
+                    type: "PUT",
+                    url: `/api/reply/pu/${id}`,
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        alert("수정완료");
+                        window.location.reload();
+                    }
+                })
+            }
+        }
+
+        function checkLogin(){
+            if($('#my-username').text().trim() == ""){
+                alert("로그인을 해주세요!");
+                location.href='/user/login';
+            }else {
+                writeReply();
+            }
+        }
+
+
+        function deleteReply(id){
+            if($('#my-username').text().trim() == ""){
+                alert("로그인을 해주세요!");
+                location.href='/user/login';
+            }else {
+                $.ajax({
+                    type: "DELETE",
+                    url: `/api/reply/pu/${id}`,
+                    success: function (response) {
+                        alert("삭제")
+                        window.location.reload();
+                    }
+                })
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <form id="go-login" action="/user/login" method="get">
+        <a href="/user/login">로그인</a>
+    </form>
+    <span id="my-username" th:text="${username}" style="display: none"></span>
+    <form id="my_form" method="post" action="/user/logout">
+        <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
+    </form>
+    <div class="center-image" onclick="location.href='/'">
+        <img class="my-image" src="https://pbs.twimg.com/media/EbSKBtIUMAA47Eq?format=jpg&name=large">
+    </div>
+    <div class="my-box" id="comment-box">
+    </div>
+    <div class="my-box">
+        <textarea placeholder="댓글 내용을 입력해주세요" id="reply" style="width: 100%" rows="3"></textarea>
+        <button type="button" class="btn btn-primary" style="margin: auto; display: block" onclick="checkLogin();">작성하기</button>
+    </div>
+    <div id="reply-box">
+        <div class="my-box">
+            <h3>작성자</h3>
+            <h4>내용</h4>
+            <p style="float: right; margin-bottom: 10px">시간</p>
+        </div>
+    </div>
+
+</body>
+
+</html>
