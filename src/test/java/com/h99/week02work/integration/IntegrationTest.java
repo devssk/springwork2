@@ -7,14 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+//스프링을 실행시켜 테스트.. 하지만 쓸일이 없다..
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

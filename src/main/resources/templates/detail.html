@@ -36,11 +36,14 @@
 
     </style>
     <script>
+        //페이지 로드시 코멘트 불러오기
         $(document).ready(function (){
             getOneComment();
         })
 
+        //메인페이지에서 해당 게시글 눌럿을때 그 게시글 상세내용 불러오기
         function getOneComment(){
+            //메인페이지에서 id값을 받아옴
             let id = localStorage.getItem('id');
             $.ajax({
                 type: "GET",
@@ -51,6 +54,7 @@
                     let username = response.username;
                     let createdAt = response.createdAt;
                     addHTML(comment, title, username, createdAt);
+                    //게시글의 상세내용을 다 불러온 후 이 게시글 제목이 포함된 댓글 불러오기
                     getReply(title);
                 }
             })
@@ -73,14 +77,27 @@
             $('#comment-box').append(tempHtml);
         }
 
-
+        //댓글쓰기 로그인 체크
+        function checkLogin(){
+            //모델로 보내준 username값이 있는지 확인
+            if($('#my-username').text().trim() == ""){
+                alert("로그인을 해주세요!");
+                location.href='/user/login';
+            }else {
+                //있으면 댓글쓰기 실행
+                writeReply();
+            }
+        }
+        //댓글쓰기 checkLogin()로 먼저 확인후 실행됨
         function writeReply(){
+            //댓글 내용이 비어있는것 확인
             if($('#reply').val() == ""){
                 alert("내용을 입력해주세요")
             }else {
                 let username = $('#my-username').text().trim();
                 let reply = $('#reply').val();
                 let title = $('#title').text().trim();
+                //댓글에는 코멘트가 들어가지 않음
                 let comment = null;
                 let data = {'username': username, 'reply': reply, 'title': title, 'comment': comment};
                 $.ajax({
@@ -90,16 +107,19 @@
                     data: JSON.stringify(data),
                     success: function (response) {
                         alert("작성 완료")
+                        //작성후 페이지 새로고침
                         window.location.reload();
                     }
                 })
             }
         }
 
+        //댓글 불러오기
         function getReply(title){
             $('#reply-box').empty();
             $.ajax({
                 type: "GET",
+                //title값으로 불러온다.
                 url: `/api/reply/${title}`,
                 success: function (response){
                     for(let i = 0; i < response.length; i++){
@@ -124,16 +144,20 @@
                                 <p id="title-${id}" style="display: none">${title}</p>
                                 <button id="sub-btn-${id}" type="button" style="margin: auto; position: relative" class="btn btn-primary" onclick="subReplyCheck(${id})">수정하기</button>
                                 <button id="sub-btn2-${id}" type="button" style="margin: auto; position: relative; display: none" class="btn btn-primary" onclick="subReply(${id})">수정완료</button>
-                                <button type="button" style="margin: auto; display: block" class="btn btn-secondary" onclick="deleteReply(${id})">삭제하기</button>
+                                <button type="button" style="margin: auto; display: block" class="btn btn-secondary" onclick="deleteCheck(${id})">삭제하기</button>
                             </div>`
             $('#reply-box').append(tempHtml);
         }
 
+        //댓글 수정하기 확인
         function subReplyCheck(id){
+            //현재 페이지에 로그인된 username을 불러온다
             let username = $(`#reply-username-${id}`).text().trim();
+            //댓글의 username과 로그인된 username을 비교하고 맞지 않으면 수정할 수 없음
             if ($('#my-username').text().trim() != username){
                 alert("댓글 작성자만 수정할 수 있습니다.")
             }else{
+                //비교해서 맞으면 기존 댓글 내용과 수정하기 버튼이 사라지고 textarea와 수정완료버튼이 생김
                 $(`#replybox-${id}`).hide();
                 $(`#sub-btn-${id}`).hide();
                 $(`#textarea-${id}`).show();
@@ -141,13 +165,16 @@
             }
         }
 
+        //댓글 수정하기
         function subReply(id) {
+            //댓글 내용이 비어있는것 확인
             if($(`#textarea-${id}`).val() == ""){
                 alert("내용을 입력해주세요!")
             }else{
                 let username = $(`#reply-username-${id}`).text().trim();
                 let title = $(`#title-${id}`).text().trim();
                 let reply = $(`#textarea-${id}`).val();
+                //댓글에는 코멘트가 들어가지 않음
                 let comment = null;
                 console.log(username, title, reply, comment);
                 let data = {'username': username, 'title': title, 'reply': reply, 'comment': comment};
@@ -164,20 +191,23 @@
             }
         }
 
-        function checkLogin(){
-            if($('#my-username').text().trim() == ""){
+        //삭제하기전 로그인 체크
+        function deleteCheck(id){
+            if($('#my-username').text().trim() == "") {
                 alert("로그인을 해주세요!");
-                location.href='/user/login';
+                location.href = '/user/login';
             }else {
-                writeReply();
+                deleteReply(id)
             }
         }
 
-
+        //댓글 삭제하기
         function deleteReply(id){
-            if($('#my-username').text().trim() == ""){
-                alert("로그인을 해주세요!");
-                location.href='/user/login';
+            //현재 페이지에 로그인된 username을 불러온다
+            let username = $(`#reply-username-${id}`).text().trim();
+            //댓글의 username과 로그인된 username을 비교하고 맞지 않으면 삭제할 수 없음
+            if ($('#my-username').text().trim() != username){
+                alert("댓글 작성자만 삭제할 수 있습니다.")
             }else {
                 $.ajax({
                     type: "DELETE",
@@ -197,6 +227,7 @@
     <form id="go-login" action="/user/login" method="get">
         <a href="/user/login">로그인</a>
     </form>
+<!--    모델에서 뿌려준 username을 숨김-->
     <span id="my-username" th:text="${username}" style="display: none"></span>
     <form id="my_form" method="post" action="/user/logout">
         <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>

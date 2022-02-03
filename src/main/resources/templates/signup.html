@@ -25,6 +25,7 @@
   </script>
 </head>
 <body>
+<!--    모델에서 뿌려준 username을 숨김-->
 <span id="my-username" th:text="${username}" style="display: none"></span>
 <form id="go-login" action="/user/login" method="get">
   <a href="/user/login">로그인</a>
@@ -39,26 +40,27 @@
     <div class="login-id-label">Nickname</div>
     <input type="text" name="username" placeholder="Nickname" class="login-input-box">
     <br />
-    <span th:text="${valid_username}"></span>
+<!--    닉네임 유효성 검사 에러메세지-->
+    <span style="color: red" th:text="${valid_username}"></span>
     <div class="login-id-label">Password</div>
     <input type="password" name="password" class="login-input-box">
     <br />
-    <span th:text="${valid_password}"></span>
+    <!--    닉네임 유효성 검사 에러메세지-->
+    <span style="color: red" th:text="${valid_password}"></span>
     <div class="login-id-label">Password check</div>
     <input type="password" name="passwordCheck" class="login-input-box">
     <br />
-    <span th:text="${valid_passwordCheck}"></span>
+    <!--    닉네임 유효성 검사 에러메세지-->
+    <span style="color: red" th:text="${valid_passwordCheck}"></span>
     <div class="login-id-label">E-mail</div>
     <input type="text" name="email" placeholder="E-mail" class="login-input-box">
     <br />
-    <span th:text="${valid_email}"></span>
-<!--    <div>-->
-<!--      <input id="admin-check" type="checkbox" name="admin" onclick="onclickAdmin()" style="margin-top: 40px;">관리자-->
-<!--      <input id="admin-token" type="password" name="adminToken" placeholder="관리자 암호" class="login-input-box" style="display:none">-->
-<!--    </div>-->
+    <!--    닉네임 유효성 검사 에러메세지-->
+    <span style="color: red" th:text="${valid_email}"></span>
     <button id="login-id-submit">회원 가입</button>
     <br />
-    <span th:text="${errorMessage}"></span>
+    <!--    닉네임 유효성 검사 에러메세지-->
+    <span style="font-size: 20px; color:red" th:text="${errorMessage}"></span>
   </form>
 </div>
 </body>

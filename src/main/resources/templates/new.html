@@ -35,10 +35,11 @@
 
     </style>
     <script>
-
+        //게시글 작성
         function writeComment(){
             let title = $('#title').val();
             let comment = $('#comment').val();
+            //로그인 된 유저네임을 불러와서 자동으로 넣음
             let username = $('#username').text().trim();
             let reply = null;
             let data = {'title': title, 'comment': comment, 'username': username, 'reply': reply};
@@ -73,6 +74,7 @@
         </div>
         <div>작성자명</div>
         <div id="username" style="margin-bottom: 8px">
+            <!--    모델에서 뿌려준 username을 넣어주기-->
             <span th:text="${username}"></span>
         </div>
         <div class="mb-3">

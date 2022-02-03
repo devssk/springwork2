@@ -9,6 +9,8 @@ import java.util.Collection;
 public class UserDetailsImpl implements UserDetails {
     private final User user;
 
+    //시큐리티 로그인
+
     public UserDetailsImpl(User user) {
         this.user = user;
     }

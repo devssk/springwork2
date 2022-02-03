@@ -1,6 +1,5 @@
 package com.h99.week02work.model;
 
-import com.h99.week02work.dto.SignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

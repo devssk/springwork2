@@ -1,9 +1,9 @@
 package com.h99.week02work.validator;
 
 import com.h99.week02work.dto.SignupRequestDto;
-import org.omg.CORBA.UserException;
 import org.springframework.stereotype.Component;
 
+//어노테이션으로 쓰지 않고 따로 만들었으나 쓸일은 없음....
 @Component
 public class Validator {
     public static void validateSignup(SignupRequestDto requestDto){

@@ -33,11 +33,12 @@
 
     </style>
     <script>
+        //페이지 로드시 게시글 내용 불러오기
         $(document).ready(function (){
             getComments();
-            console.log($('#my-username').text().trim())
         })
 
+        //게시글 불러오기
         function getComments(){
             $('#comment-box').empty();
             $.ajax({
@@ -66,10 +67,11 @@
             $('#comment-box').append(tempHtml);
         }
 
+        //상세페이지로 id값 던져주기
         function throwId(id){
             localStorage.setItem('id',id)
         }
-
+        //로그인 체크
         function checkLogin(){
             if($('#my-username').text().trim() == ""){
                 alert("로그인을 해주세요!");
@@ -83,6 +85,7 @@
 </head>
 
 <body>
+<!--    모델에서 뿌려준 username을 숨김-->
     <span id="my-username" th:text="${username}" style="display: none"></span>
     <form id="go-signup" action="/user/signup" method="get">
         <a href="/user/signup">회원가입</a>

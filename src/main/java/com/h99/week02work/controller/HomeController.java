@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
+    //로그인시 userDetails에서 유저네임을 가져와서 모델로 html로 보내준다.
     @GetMapping("/")
     public String goHome(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails == null){
@@ -18,7 +19,7 @@ public class HomeController {
         }
     }
 
-
+    //로그인시 userDetails에서 유저네임을 가져와서 모델로 html로 보내준다.
     @GetMapping("/detail")
     public String goDetail(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails == null){
@@ -29,6 +30,7 @@ public class HomeController {
         }
     }
 
+    //로그인시 userDetails에서 유저네임을 가져와서 모델로 html로 보내준다.
     @GetMapping("/new")
     public String goNew(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails == null){

@@ -24,6 +24,7 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final KakaoUserService kakaoUserService;
+
     //회원 로그인 페이지
     @GetMapping("/user/login")
     public String login(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -47,7 +48,9 @@ public class UserController {
     //회원가입
     @PostMapping("/user/signup")
     public String registerUser(@Valid SignupRequestDto requestDto, Errors errors, Model model){
+        //유저네임, 패스워드, 이메일이 유효한지 유효성검사
         if(errors.hasErrors()){
+            //회원가입 오류시 기존내용을 유지하려고 했으나 오류로인해 쓰진않음....
             model.addAttribute("requestDto", requestDto);
             Map<String, String> validatorResult = userService.validateHandling(errors);
             for (String key : validatorResult.keySet()){
@@ -55,6 +58,7 @@ public class UserController {
             }
             return "signup";
         }
+        //중복된 닉네임인지 비밀번호가 일치하는지 비밀번호안에 닉네임이 있는지 검사
         try{ userService.registerUser(requestDto); }
         catch (Exception error){
             model.addAttribute("errorMessage", error.getMessage());

@@ -14,12 +14,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
+//실패할 경우 실패하는 메세지를 뜨게한다.
+//따라서 모두 성공으로 뜨지만 하나씩 눌러서 실패할경우의 메세지를 봐야함
 @ExtendWith(MockitoExtension.class)
 public class DtoTest  {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     Validator validator = factory.getValidator();
 
+
+    //비밀번호가 일치하지 않는경우,비밀번호에 특수문자가 들어가있는 경우, 닉네임에 특수문자가 들어가있는경우
     @Test
     @DisplayName("유효성 검사")
     public void validateUser() {
@@ -41,6 +44,7 @@ public class DtoTest  {
         }
     }
 
+    //닉네임이 3글자 미만인경우
     @Test
     @DisplayName("유효성 검사2")
     public void validateUser2() {
@@ -62,6 +66,7 @@ public class DtoTest  {
         }
     }
 
+    //모두 정상인 경우
     @Test
     @DisplayName("유효성 검사3")
     public void validateUser3() {
@@ -83,6 +88,7 @@ public class DtoTest  {
         }
     }
 
+    //비밀번호가 4글자 미만인경우
     @Test
     @DisplayName("유효성 검사4")
     public void validateUser4() {
